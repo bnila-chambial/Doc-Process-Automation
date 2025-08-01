@@ -1,0 +1,57 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Release Note PDF Generator</title>
+  https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js
+</head>
+<body>
+  <h2>Release Note Generator</h2>
+
+  <form id="releaseForm">
+    <label>Product Name: <input type="text" id="productName" required></label><br>
+    <label>Version: <input type="text" id="version" required></label><br>
+    <label>Release Type:
+      <select id="releaseType">
+        <option>Bug Fix</option>
+        <option>Feature</option>
+        <option>Enhancement</option>
+      </select>
+    </label><br>
+    <label>Description:<br>
+      <textarea id="description" rows="4" cols="50" required></textarea>
+    </label><br>
+    <label>Release Date: <input type="date" id="releaseDate" required></label><br>
+    <button type="submit">Generate PDF</button>
+  </form>
+
+  <script>
+    document.getElementById('releaseForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const productName = document.getElementById('productName').value;
+      const version = document.getElementById('version').value;
+      const releaseType = document.getElementById('releaseType').value;
+      const description = document.getElementById('description').value;
+      const releaseDate = document.getElementById('releaseDate').value;
+
+      const template = `
+        Release Note
+
+        Product: ${productName}
+        Version: ${version}
+        Type: ${releaseType}
+        Description: ${description}
+        Release Date: ${releaseDate}
+      `;
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.setFontSize(12);
+      doc.text(template, 10, 10);
+      doc.save(`${productName}_ReleaseNote.pdf`);
+    });
+  </script>
+</body>
+</html>
