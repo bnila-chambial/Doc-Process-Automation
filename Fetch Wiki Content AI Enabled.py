@@ -6,9 +6,9 @@ CONFLUENCE_URL = "https://wiki.landisgyr.net"
 SPACE_KEY = "US"
 
 SECTION_HEADER = "New Features"
-WORD_DOC_PATH = "C:\\Users\\PawarSar\\Documents\\Test Template.docx"
-OUTPUT_DOC_PATH = "C:\\Users\\PawarSar\\Documents\\Updated Template.docx"
-PARAPHRASED_DOC_PATH = "C:\\Users\\PawarSar\\Documents\\Paraphrased Template.docx"
+WORD_DOC_PATH = "C:\\Users\\chambiaB\\DPA Project\\Release Notes AI_Copy\\Test Template.docx"
+OUTPUT_DOC_PATH = "C:\\Users\\chambiaB\\DPA Project\\Release Notes AI_Copy\Updated Template.docx"
+PARAPHRASED_DOC_PATH = "C:\\Users\\chambiaB\\DPA Project\\Release Notes AI_Copy\Paraphrased Template.docx"
 PLACEHOLDER_TEXT = "[[New Features22]]"
 
 def get_password(prompt='Password: '):
@@ -142,4 +142,5 @@ doc.save(OUTPUT_DOC_PATH)
 print(f"✅ Section inserted into '{OUTPUT_DOC_PATH}' successfully.")
 
 # Paraphrase the updated document using ollama
+
 paraphrase_docx(OUTPUT_DOC_PATH, PARAPHRASED_DOC_PATH)
