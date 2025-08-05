@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Release Notes Generator</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #2ecc71;
+            --error-color: #e74c3c;
+            --background-color: #f5f6fa;
+            --text-color: #2c3e50;
+            --border-radius: 8px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.2rem;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--primary-color);
+            transition: var(--transition);
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e1e1e1;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            background: white;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px dashed #e1e1e1;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        input[type="file"]:hover {
+            border-color: var(--secondary-color);
+        }
+
+        button {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            width: 100%;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .flash-messages {
+            margin-bottom: 2rem;
+        }
+
+        .flash-message {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: var(--border-radius);
+            animation: slideIn 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .flash-message.error {
+            background-color: #fdecea;
+            color: var(--error-color);
+            border: 1px solid #fadbd9;
+        }
+
+        .flash-message.success {
+            background-color: #edfaf1;
+            color: var(--success-color);
+            border: 1px solid #d4f3e6;
+        }
+
+        .loading {
+            position: relative;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.8s linear infinite;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        @keyframes spin {
+            to { transform: translateY(-50%) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Release Notes Generator</h1>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('generate_release_notes') }}" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="username">Confluence Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Confluence Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <div class="form-group">
+                <label for="version">Release Version (e.g., 9.2):</label>
+                <input type="text" id="version" name="version" required>
+            </div>
+
+            <div class="form-group">
+                <label for="template">Word Template:</label>
+                <input type="file" id="template" name="template" accept=".docx" required>
+            </div>
+
+            <button type="submit">Generate Release Notes</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const submitButton = form.querySelector('button[type="submit"]');
+            const inputs = form.querySelectorAll('input[required]');
+
+            // Validate form fields on input
+            inputs.forEach(input => {
+                input.addEventListener('input', () => {
+                    validateField(input);
+                    checkFormValidity();
+                });
+            });
+
+            // Add loading state and prevent double submission
+            form.addEventListener('submit', function(e) {
+                if (!form.checkValidity()) {
+                    e.preventDefault();
+                    return;
+                }
+
+                submitButton.classList.add('loading');
+                submitButton.disabled = true;
+                submitButton.textContent = 'Generating...';
+
+                // Re-enable button after 30 seconds (failsafe)
+                setTimeout(() => {
+                    submitButton.classList.remove('loading');
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Generate Release Notes';
+                }, 30000);
+            });
+
+            // File input enhancement
+            const fileInput = document.getElementById('template');
+            fileInput.addEventListener('change', function(e) {
+                const fileName = e.target.files[0]?.name;
+                if (fileName) {
+                    this.parentElement.setAttribute('data-file', fileName);
+                } else {
+                    this.parentElement.removeAttribute('data-file');
+                }
+            });
+
+            // Version number validation
+            const versionInput = document.getElementById('version');
+            versionInput.addEventListener('input', function() {
+                const value = this.value;
+                const isValid = /^\d+\.\d+$/.test(value);
+                this.setCustomValidity(isValid ? '' : 'Please enter version in format X.Y (e.g., 9.2)');
+                validateField(this);
+            });
+
+            function validateField(input) {
+                const isValid = input.checkValidity();
+                input.style.borderColor = isValid ? '#e1e1e1' : '#e74c3c';
+            }
+
+            function checkFormValidity() {
+                const isValid = Array.from(inputs).every(input => input.checkValidity());
+                submitButton.disabled = !isValid;
+                submitButton.style.opacity = isValid ? '1' : '0.7';
+            }
+
+            // Initialize form validation state
+            checkFormValidity();
+        });
+    </script>
+</body>
+</html>
